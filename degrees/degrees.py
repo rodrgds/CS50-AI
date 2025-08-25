@@ -1,4 +1,5 @@
 import csv
+from operator import contains
 import sys
 
 from util import Node, StackFrontier, QueueFrontier
@@ -91,9 +92,35 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    
+    frontier = QueueFrontier()
+    frontier.add(Node(source, None, None))
+    visited_people = set()
 
-    # TODO
-    raise NotImplementedError
+    while True:
+        if frontier.empty():
+            return None
+        
+        node = frontier.remove()
+
+        if node.state == target:
+            path = []
+            while node.parent != None:
+                path.append((node.action, node.state))
+                node = node.parent
+            return list(reversed(path))
+
+        for movie_id, person_id in neighbors_for_person(node.state):
+            if person_id not in visited_people:
+                frontier.add(
+                    Node(
+                        person_id,
+                        node,
+                        movie_id
+                    )
+                )
+                visited_people.add(person_id)
+
 
 
 def person_id_for_name(name):
